@@ -180,7 +180,11 @@ app.get("/api/gettranscams", function (req, res) {
 
 app.get("/api/getcamstransdata", function (req, res) {
     var model = mongoose.model('cams_trans', cams_transSchema, 'cams_trans');
-    model.find({}, function (err, data) {
+	
+	console.log("sffffasdfadf");
+	 var model2 = mongoose.model('folio_cams', foliocams, 'folio_cams');
+	
+    model2.find({}, function (err, data) {
         if (err) {
             res.send(err);
         }
@@ -188,6 +192,9 @@ app.get("/api/getcamstransdata", function (req, res) {
             res.send(data);
         }
     });
+	console.log(" the end sffffasdfadf");
+	
+	
 })
 
 app.get("/api/getamclist", function (req, res) {
