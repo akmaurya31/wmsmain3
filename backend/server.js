@@ -22,6 +22,8 @@ dotenv.config();
 
 const mongodbUrl= config.MONGODB_URL;
 
+console.log("I am mongodbUrflfffffffffffff", mongodbUrl);
+
 mongoose.connect(mongodbUrl, {
 	useNewUrlParser:true,
 	useUnifiedTopology: true,
