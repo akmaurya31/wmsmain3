@@ -23,6 +23,8 @@ dotenv.config();
 const mongodbUrl= config.MONGODB_URL;
 
 console.log("I am mongodbUrflfffffffffffff", mongodbUrl);
+return "ssds";
+
 
 mongoose.connect(mongodbUrl, {
 	useNewUrlParser:true,
