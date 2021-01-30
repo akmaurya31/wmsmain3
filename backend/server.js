@@ -1,7 +1,7 @@
 import express from 'express';
 import data from './data.js';
 import dotenv from 'dotenv';
- import config from './config.js';
+ //import config from './config.js';
  import mongoose from 'mongoose';
  import path from 'path';
  import userRoute from './routes/userRoute.js';
@@ -20,10 +20,11 @@ dotenv.config();
  
 
 
-const mongodbUrl= config.MONGODB_URL;
+//const mongodbUrl= config.MONGODB_URL;
+const mongodbUrl = process.env.MONGODB_URL;
 
 console.log("I am mongodbUrflfffffffffffff", mongodbUrl);
-return "ssds";
+
 
 
 mongoose.connect(mongodbUrl, {
