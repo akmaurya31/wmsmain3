@@ -209,8 +209,8 @@ app.get("/api/getcamstransdata", function (req, res) {
 
 app.get("/api/getamclist", function (req, res) {
     Axios.get('https://prodigyfinallive.herokuapp.com/getUserDetails',
-    //{data:{ email:req.body.email}}
-    {data:{ email:"sunilguptabfc@gmail.com"}}
+    {data:{ email:req.body.email}}
+//  {data:{ email:"sunilguptabfc@gmail.com"}}
       ).then(function(result) {
         if(result.data.data  === undefined || req.body.email == ''){
             resdata= {
