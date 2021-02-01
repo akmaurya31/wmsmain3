@@ -238,9 +238,9 @@ app.get("/api/getamclist", function (req, res) {
         var folio = mongoose.model('folio_cams', foliocams, 'folio_cams');
         var trans = mongoose.model('trans_cams', transcams, 'trans_cams');
         const pipeline = [
-            {"$match" : {pan_no:pan}}, 
-             {"$group" : {_id : {foliochk:"$foliochk", amc_code:"$amc_code", product:"$product"}}}, 
-             {"$project" : {_id:0, folio:"$_id.foliochk", amc_code:"$_id.amc_code", product_code:"$_id.product"}}
+            {"$match" : {PAN_NO:pan}}, 
+             {"$group" : {_id : {FOLIOCHK:"$FOLIOCHK", AMC_CODE:"$AMC_CODE", PRODUCT:"$PRODUCT"}}}, 
+             {"$project" : {_id:0, folio:"$_id.FOLIOCHK", amc_code:"$_id.AMC_CODE", product_code:"$_id.PRODUCT"}}
         ]
         const pipeline1 = [
             {"$match" : {PAN:pan}}, 
