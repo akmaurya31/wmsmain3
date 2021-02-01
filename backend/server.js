@@ -221,7 +221,7 @@ app.get("/api/getamclist", function (req, res) {
       ).then(function(result) {
         if(result.data.data  === undefined || req.body.email == ''){
             resdata= {
-                status:400,
+                status:401,
                 message:'Data not found',            
            }
            res.json(resdata) 
@@ -229,7 +229,7 @@ app.get("/api/getamclist", function (req, res) {
         }else{          
        if(result.data.data === undefined && result.data.data == '' && result.data.message == "Bank details not found "){
             resdata= {
-                status:400,
+                status:402,
                 message:'Data not found',            
            }
            res.json(resdata) 
@@ -258,7 +258,7 @@ app.get("/api/getamclist", function (req, res) {
                               }
                             }else{
                                 resdata= {
-                                status:400,
+                                status:403,
                                 message:'Data not found',            
                            }
                             }
