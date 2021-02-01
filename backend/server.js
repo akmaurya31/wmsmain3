@@ -207,57 +207,67 @@ app.get("/api/getcamstransdata", function (req, res) {
 })
 
 app.get("/api/getamclist", function (req, res) {
-Axios.get('https://prodigyfinallive.herokuapp.com/getUserDetails',
-{data:{ email:'sunilguptabfc@gmail.com'}}
-  ).then(function(result) {
-    //let json = CircularJSON.stringify(result);
-    var pan =  result.data.data.User[0].pan_card;
-    var model = mongoose.model('folio_cams', foliocams, 'folio_cams');
-    var trans = mongoose.model('trans_cams', transcams, 'trans_cams');
-    var datacollection = model.find({"pan_no":pan}).distinct("amc_code", function (err, newdata) { 
-        if(newdata != 0){    
-                 resdata= {
-                    status:200,
-                    message:'Successfull',
-                    data:  newdata 
-                  }
-                }else{
-                 resdata= {
-                    status:400,
-                    message:'Data not found',            
-               }
-                  // res.send(newdata);
-                }
-             //   res.json(resdata)    
-            });
-    var trans = mongoose.model('trans_cams', transcams, 'trans_cams');
-    var datacollection1 = trans.find({"pan":pan}).distinct("amc_code", function (err, newdata) { 
-        if(newdata != 0){    
-                 resdata1= {
-                    status:200,
-                    message:'Successfull',
-                    data:  newdata 
-                  }
-                }else{
-                    resdata1= {
-                    status:400,
-                    message:'Data not found',            
-               }
-                  // res.send(newdata);
-                }
-                //res.json(resdata1)
-                var datacon = resdata.data.concat(resdata1.data)
-                var removeduplicates = Array.from(new Set(datacon));
-                resdata.data = removeduplicates
-              //  console.log(datacon)
-              //  console.log(removeduplicates)
-                res.send(resdata)
-            
-            });
-
-       // return resdata
-});
-})
+    Axios.get('https://prodigyfinallive.herokuapp.com/getUserDetails',
+    //{data:{ email:req.body.email}}
+    {data:{ email:"sunilguptabfc@gmail.com"}}
+      ).then(function(result) {
+        if(result.data.data  === undefined || req.body.email == ''){
+            resdata= {
+                status:400,
+                message:'Data not found',            
+           }
+           res.json(resdata) 
+           return resdata;
+        }else{          
+       if(result.data.data === undefined && result.data.data == '' && result.data.message == "Bank details not found "){
+            resdata= {
+                status:400,
+                message:'Data not found',            
+           }
+           res.json(resdata) 
+           return resdata;
+        }else{
+        var pan =  result.data.data.User[0].pan_card;
+        var folio = mongoose.model('folio_cams', foliocams, 'folio_cams');
+        var trans = mongoose.model('trans_cams', transcams, 'trans_cams');
+        const pipeline = [
+            {"$match" : {pan_no:pan}}, 
+             {"$group" : {_id : {foliochk:"$foliochk", amc_code:"$amc_code", product:"$product"}}}, 
+             {"$project" : {_id:0, folio:"$_id.foliochk", amc_code:"$_id.amc_code", product_code:"$_id.product"}}
+        ]
+        const pipeline1 = [
+            {"$match" : {PAN:pan}}, 
+             {"$group" : {_id : {FOLIO_NO:"$FOLIO_NO", AMC_CODE:"$AMC_CODE", PRODCODE:"$PRODCODE"}}}, 
+             {"$project" : {_id:0, folio:"$_id.FOLIO_NO", amc_code:"$_id.AMC_CODE", product_code:"$_id.PRODCODE"}}
+        ]
+        folio.aggregate(pipeline, (err, newdata) => {
+          trans.aggregate(pipeline1, (err, newdata1) => {
+            if(newdata1.length != 0 || newdata.length != 0){     
+                             resdata= {
+                                status:200,
+                                message:'Successfull',
+                                data:  newdata1 
+                              }
+                            }else{
+                                resdata= {
+                                status:400,
+                                message:'Data not found',            
+                           }
+                            }
+                            var datacon = newdata.concat(newdata1)
+                            datacon = datacon.map(JSON.stringify).reverse() // convert to JSON string the array content, then reverse it (to check from end to begining)
+                            .filter(function(item, index, arr){ return arr.indexOf(item, index + 1) === -1; }) // check if there is any occurence of the item in whole array
+                            .reverse().map(JSON.parse) ;
+                             resdata.data = datacon
+                            //console.log("res="+JSON.stringify(resdata))
+                            res.json(resdata)  
+                            return resdata                    
+                        });
+                    });
+              }
+            }      
+    });    
+    })
 
 app.get("/api/getfoliolist", function (req, res) {
     Axios.get('https://prodigyfinallive.herokuapp.com/getUserDetails',
