@@ -328,7 +328,7 @@ app.get("/api/getfoliocams", function (req, res) {
 
 app.post("/api/savecamsnav", function (req, res) {
     var model = mongoose.model('cams_nav', nav_cams, 'cams_nav');
-    for (i = 0; i < req.body.length; i++) {
+    for (var i = 0; i < req.body.length; i++) {
         var mod = new model(req.body[i]);
         mod.save(function (err, data) {
             if (err) {
@@ -345,7 +345,7 @@ app.post("/api/savecamsnav", function (req, res) {
 
 app.post("/api/savecamstrans", function (req, res) {
     var model = mongoose.model('cams_trans', cams_transSchema, 'cams_trans');
-    for (i = 0; i < req.body.length; i++) {
+    for (var i = 0; i < req.body.length; i++) {
         var mod = new model(req.body[i]);
         mod.save(function (err, data) {
             if (err) {
@@ -377,7 +377,7 @@ app.post("/api/savefoliocams", function (req, res) {
 
 app.post("/api/savefoliokarvy", function (req, res) {
     var model = mongoose.model('folio_karvy', foliokarvy, 'folio_karvy');
-    for (i = 0; i < req.body.length; i++) {
+    for (var i = 0; i < req.body.length; i++) {
         var mod = new model(req.body[i]);
         mod.save(function (err, data) {
             if (err) {
@@ -394,7 +394,7 @@ app.post("/api/savefoliokarvy", function (req, res) {
 
 app.post("/api/savefoliofranklin", function (req, res) {
     var model = mongoose.model('folio_franklin', foliofranklin, 'folio_franklin');
-    for (i = 0; i < req.body.length; i++) {
+    for (var i = 0; i < req.body.length; i++) {
         var mod = new model(req.body[i]);
         mod.save(function (err, data) {
             if (err) {
@@ -411,7 +411,7 @@ app.post("/api/savefoliofranklin", function (req, res) {
 
 app.post("/api/savetranscams", function (req, res) {
     var model = mongoose.model('trans_cams', transcams, 'trans_cams');
-    for (i = 0; i < req.body.length; i++) {
+    for (var i = 0; i < req.body.length; i++) {
         var mod = new model(req.body[i]);
         mod.save(function (err, data) {
             if (err) {
@@ -428,7 +428,7 @@ app.post("/api/savetranscams", function (req, res) {
 
 app.post("/api/savetranskarvy", function (req, res) {
     var model = mongoose.model('trans_karvy', transkarvy, 'trans_karvy');
-    for (i = 0; i < req.body.length; i++) {
+    for (var i = 0; i < req.body.length; i++) {
         var mod = new model(req.body[i]);
         mod.save(function (err, data) {
             if (err) {
@@ -445,7 +445,7 @@ app.post("/api/savetranskarvy", function (req, res) {
 
 app.post("/api/savetransfranklin", function (req, res) {
     var model = mongoose.model('trans_franklin', transfranklin, 'trans_franklin');
-    for (i = 0; i < req.body.length; i++) {
+    for (var i = 0; i < req.body.length; i++) {
         var mod = new model(req.body[i]);
         mod.save(function (err, data) {
             if (err) {
