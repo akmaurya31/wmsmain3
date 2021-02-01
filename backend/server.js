@@ -47,35 +47,47 @@ app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 
 
 
-
-
-//var getschema = require("../backend/route.js");//ravi line
-
-const foliocams = new Schema({
-    amc_code: { type: String },
-    foliochk: { type: String },
-    inv_name: { type: String },
-    sch_name: { type: String },
-    jnt_name1: { type: String },
-    jnt_name2: { type: String },
-    holding_nature: { type: String },
-    pan_no: { type: String },
-    joint1_pan: { type: String },
-    bank_name: { type: String },
-    ac_no: { type: String },
-    nom_name: { type: String },
-    nom2_name: { type: String },
-    nom3_name: { type: String },
-    ifsc_code: { type: String },
+const navcams = new Schema({
+    SchemeCode: { type: String },
+    ISINDivPayoutISINGrowth: { type: String },
+    ISINDivReinvestment: { type: String },
+    SchemeName: { type: String ,required: true},
+    NetAssetValue: { type: Number },
+    Date: { type: Date },
 }, { versionKey: false });
 
+
+const foliocams = new Schema({
+    AMC_CODE: { type: String },
+    FOLIOCHK: { type: String },
+    INV_NAME: { type: String },
+    SCH_NAME: { type: String },
+    JNT_NAME1: { type: String },
+    JNT_NAME2: { type: String },
+    HOLDING_NATURE: { type: String },
+    PAN_NO: { type: String },
+    JOINT1_PAN: { type: String },
+    BANK_NAME: { type: String },
+    AC_NO: { type: String },
+    NOM_NAME: { type: String },
+    NOM2_NAME: { type: String },
+    NOM3_NAME: { type: String },
+    IFSC_CODE: { type: String },
+    PRODUCT: {type: String},
+}, { versionKey: false });
+
+
+
 const foliokarvy = new Schema({
-    Folio: { type: String },
-    City: { type: String },
-    Email: { type: String },
-    BankAccno: { type: String },
-    InvestorName: { type: String },
-    PANNumber: { type: String },
+    FUNDDESC: { type: String },
+    ACNO: { type: String },
+    INVNAME: { type: String },
+    JTNAME1: { type: String },
+    JTNAME2: { type: String },
+    BNKACNO: { type: String },
+    BNAME: { type: String },
+    PANGNO: { type: String },
+    NOMINEE: { type: String },
 }, { versionKey: false });
 
 const foliofranklin = new Schema({
@@ -88,26 +100,30 @@ const foliofranklin = new Schema({
     INV_NAME: { type: String },
     JOINT_NAM1: { type: String },
     ADDRESS1: { type: String },
-    ADDRESS2: { type: String },
-    ADDRESS3: { type: String },
+    BANK_NAME: { type: String },
+    ACCNT_NO: { type: String },
     D_BIRTH: { type: String },
     F_NAME: { type: String },
     PHONE_RES: { type: String },
+    PANNO1: { type: String },
 }, { versionKey: false });
 
-var transcams = new Schema({
-    trxnno: {type: String },
-    folio_no: { type: String },
-    scheme: { type: String },
-    inv_name: { type: String },
-    traddate: { type: String },
-    units: { type: String },
-    amount: { type: String },
-    trxn_nature: { type: String },
-    scheme_type: { type: String },
-    pan: { type: String },
-    trxn_type_flag: { type: String },
-    amc_code: { type: String },
+const transcams = new Schema({
+    AMC_CODE: { type: String },
+    FOLIO_NO: { type: String },
+    PRODCODE: { type: String },
+    SCHEME: { type: String },
+    INV_NAME: { type: String }, 
+    TRXNNO: {type: String },
+    TRADDATE: { type: Date },   
+    UNITS: { type: Number },
+    AMOUNT: { type: Number },
+    TRXN_NATUR: { type: String },
+    SCHEME_TYP: { type: String },
+    PAN: { type: String },
+    TRXN_TYPE_: { type: String },   
+    AC_NO: { type: String } ,
+    BANK_NAME: { type: String } ,
 }, { versionKey: false });
 
 const transkarvy = new Schema({
@@ -117,14 +133,19 @@ const transkarvy = new Schema({
     TD_TRNO: { type: String },
     SMCODE: { type: String },
     INVNAME: { type: String },
-    TD_TRDT: { type: String },
+    TD_TRDT: { type: Date },
     TD_POP: { type: String },
-    TD_AMT: { type: String },
+    TD_AMT: { type: Number },
     TD_APPNO: { type: String },
     UNQNO: { type: String },
     TD_NAV: { type: String },
     IHNO: { type: String },
     BRANCHCODE: { type: String },
+    TRDESC: { type: String },
+    PAN1: { type: String },
+    ASSETTYPE:{ type: String},
+    TD_UNITS: { type: Number},
+    SCHEMEISIN:{ type: String},
 }, { versionKey: false });
 
 const transfranklin = new Schema({
@@ -135,37 +156,20 @@ const transfranklin = new Schema({
     TRXN_TYPE: { type: String },
     TRXN_NO: { type: String },
     INVESTOR_2: { type: String },
-    TRXN_DATE: { type: String },
+    TRXN_DATE: { type: Date },
     NAV: { type: String },
     POP: { type: String },
-    UNITS: { type: String },
-    AMOUNT: { type: String },
+    UNITS: { type: Number },
+    AMOUNT: { type: Number },
     JOINT_NAM1: { type: String },
     ADDRESS1: { type: String },
+    IT_PAN_NO1: { type: String },
+    IT_PAN_NO2: { type: String },
 }, { versionKey: false });
 
-var cams_navSchema = new Schema({
-    trxnno: {type: String },
-    folio_no: { type: String },
-    scheme: { type: String },
-    inv_name: { type: String },
-    traddate: { type: String },
-    units: { type: String },
-    amount: { type: String },
-    trxn_nature: { type: String },
-    scheme_type: { type: String },
-    pan: { type: String },
-    trxn_type_flag: { type: String },
-}, { versionKey: false });
 
-const cams_transSchema = new Schema({
-    folio_no: { type: String },
-    scheme: { type: String },
-    inv_name: { type: String },
-    ac_no: { type: String },
-    bank_name: { type: String },
-}, { versionKey: false });
 
+//var getschema = require("../backend/route.js");//ravi line
 
 
 
