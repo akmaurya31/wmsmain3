@@ -385,7 +385,7 @@ app.post("/api/savefoliokarvy", function (req, res) {
             }
             else {
                 //res.send({data:"Record has been Inserted..!!"});
-                console.log("foliokarvy="+foliokarvy)
+                //console.log("foliokarvy="+foliokarvy)
                 console.log(data);
             }
         });
