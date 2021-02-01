@@ -216,10 +216,10 @@ app.get("/api/getcamstransdata", function (req, res) {
 app.get("/api/getamclist", function (req, res) {
 	var resdata="";
     Axios.get('https://prodigyfinallive.herokuapp.com/getUserDetails',
-    {data:{ email:req.query.email}}
+    {data:{ email:req.body.email}}
 //  {data:{ email:"sunilguptabfc@gmail.com"}}
       ).then(function(result) {
-        if(result.data.data  === undefined || req.query.email == ''){
+        if(result.data.data  === undefined || req.body.email == ''){
             resdata= {
                 status:401,
                 message:'Data not found',            
