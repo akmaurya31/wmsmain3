@@ -213,7 +213,7 @@ app.get("/api/getcamstransdata", function (req, res) {
 	
 })
 
-app.get("/api/getamclist", function (req, res) {
+app.post("/api/getamclist", function (req, res) {
 	var resdata="";
     Axios.get('https://prodigyfinallive.herokuapp.com/getUserDetails',
     {data:{ email:req.body.email}}
@@ -240,13 +240,13 @@ app.get("/api/getamclist", function (req, res) {
         var trans = mongoose.model('trans_cams', transcams, 'trans_cams');
         const pipeline = [
             {"$match" : {PAN_NO:pan}}, 
-             {"$group" : {_id : {FOLIOCHK:"$FOLIOCHK", AMC_CODE:"$AMC_CODE", PRODUCT:"$PRODUCT"}}}, 
-             {"$project" : {_id:0, folio:"$_id.FOLIOCHK", amc_code:"$_id.AMC_CODE", product_code:"$_id.PRODUCT"}}
+             {"$group" : {_id : {FOLIOCHK:"$FOLIOCHK", AMC_CODE:"$AMC_CODE"}}}, 
+             {"$project" : {_id:0, folio:"$_id.FOLIOCHK", amc_code:"$_id.AMC_CODE"}}
         ]
         const pipeline1 = [
             {"$match" : {PAN:pan}}, 
-             {"$group" : {_id : {FOLIO_NO:"$FOLIO_NO", AMC_CODE:"$AMC_CODE", PRODCODE:"$PRODCODE"}}}, 
-             {"$project" : {_id:0, folio:"$_id.FOLIO_NO", amc_code:"$_id.AMC_CODE", product_code:"$_id.PRODCODE"}}
+             {"$group" : {_id : {FOLIO_NO:"$FOLIO_NO", AMC_CODE:"$AMC_CODE"}}}, 
+             {"$project" : {_id:0, folio:"$_id.FOLIO_NO", amc_code:"$_id.AMC_CODE"}}
         ]
         folio.aggregate(pipeline, (err, newdata) => {
           trans.aggregate(pipeline1, (err, newdata1) => {
