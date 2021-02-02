@@ -319,17 +319,17 @@ app.post("/api/getamclist", function (req, res) {
             const pipeline = [
                 {"$match" : {PAN_NO:pan}}, 
                  {"$group" : {_id : {SCH_NAME:"$SCH_NAME", AMC_CODE:"$AMC_CODE", PRODUCT:"$PRODUCT"}}}, 
-                 {"$project" : {_id:0, scheme:"$_id.SCH_NAME", amc_code:"$_id.AMC_CODE", isin:"$_id.PRODUCT"}}
+                 {"$project" : {_id:0, SCHEME:"$_id.SCH_NAME", AMC_CODE:"$_id.AMC_CODE", PRODUCTCODE:"$_id.PRODUCT"}}
             ]
             const pipeline1 = [
                 {"$match" : {PAN:pan}}, 
                  {"$group" : {_id : {SCHEME:"$SCHEME", AMC_CODE:"$AMC_CODE", PRODCODE:"$PRODCODE"}}}, 
-                 {"$project" : {_id:0, scheme:"$_id.SCHEME", amc_code:"$_id.AMC_CODE", isin:"$_id.PRODCODE"}}
+                 {"$project" : {_id:0, SCHEME:"$_id.SCHEME", AMC_CODE:"$_id.AMC_CODE", PRODUCTCODE:"$_id.PRODCODE"}}
             ]
             const pipeline2 = [  //trans_karvy
                 {"$match" : {PAN1:pan}}, 
                  {"$group" : {_id : {FUNDDESC:"$FUNDDESC", TD_FUND:"$TD_FUND",SCHEMEISIN:"$SCHEMEISIN"}}}, 
-                 {"$project" : {_id:0, scheme:"$_id.FUNDDESC", amc_code:"$_id.TD_FUND",isin:"$_id.SCHEMEISIN"}}
+                 {"$project" : {_id:0, SCHEME:"$_id.FUNDDESC", AMC_CODE:"$_id.TD_FUND",ISIN:"$_id.SCHEMEISIN"}}
             ]
             folioc.aggregate(pipeline, (err, newdata) => {
                transc.aggregate(pipeline1, (err, newdata1) => {
