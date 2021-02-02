@@ -286,6 +286,7 @@ app.post("/api/getamclist", function (req, res) {
                             return resdata                    
                         });
                     });
+		});
               }
             }      
     });    
