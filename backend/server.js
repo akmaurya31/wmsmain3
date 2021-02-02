@@ -335,13 +335,13 @@ app.post("/api/getamclist", function (req, res) {
                transc.aggregate(pipeline1, (err, newdata1) => {
                    transk.aggregate(pipeline2, (err, newdata2) => {
                             if(newdata2.length != 0 || newdata1.length != 0 || newdata.length != 0){       
-                                 resdata1= {
+                                 resdata= {
                                     status:200,
                                     message:'Successfull',
                                     data:  newdata2 
                                   }
                                 }else{
-                                    resdata1= {
+                                    resdata= {
                                     status:400,
                                     message:'Data not found',            
                                }
