@@ -1,14 +1,14 @@
 import express from 'express';
-import data from './data.js';
+//import data from './data.js';
 import dotenv from 'dotenv';
  import config from './config.js';
  import mongoose from 'mongoose';
  import path from 'path';
- import userRoute from './routes/userRoute.js';
- import productRoute from './routes/productRoute.js';
- import uploadRouter from './routes/uploadRouter.js';
+ //import userRoute from './routes/userRoute.js';
+ //import productRoute from './routes/productRoute.js';
+ //import uploadRouter from './routes/uploadRouter.js';
 import bodyParser from 'body-parser';
-import orderRouter from './routes/orderRouter.js';
+//import orderRouter from './routes/orderRouter.js';
 var Schema = mongoose.Schema;
 import Axios from 'axios'
 //import Schema from 'mongoose.Schema';
