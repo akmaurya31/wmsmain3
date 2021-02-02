@@ -292,6 +292,7 @@ app.post("/api/getamclist", function (req, res) {
     });    
     })
  app.post("/api/getschemelist", function (req, res) {
+	 var resdata="";
         Axios.get('https://prodigyfinallive.herokuapp.com/getUserDetails',
         {data:{ email:req.body.email}}
           ).then(function(result) {
@@ -312,26 +313,26 @@ app.post("/api/getamclist", function (req, res) {
                return resdata;
             }else{
             var pan =  result.data.data.User[0].pan_card;
-            var folio = mongoose.model('folio_cams', foliocams, 'folio_cams');
-            var trans = mongoose.model('trans_cams', transcams, 'trans_cams');
+            var folioc = mongoose.model('folio_cams', foliocams, 'folio_cams');
+            var transc = mongoose.model('trans_cams', transcams, 'trans_cams');
             var transk = mongoose.model('trans_karvy', transkarvy, 'trans_karvy');
             const pipeline = [
-                {"$match" : {pan_no:pan}}, 
-                 {"$group" : {_id : {sch_name:"$sch_name", amc_code:"$amc_code", product:"$product"}}}, 
-                 {"$project" : {_id:0, scheme:"$_id.sch_name", amc_code:"$_id.amc_code", isin:"$_id.product"}}
+                {"$match" : {PAN_NO:pan}}, 
+                 {"$group" : {_id : {SCH_NAME:"$SCH_NAME", AMC_CODE:"$AMC_CODE", PRODUCT:"$PRODUCT"}}}, 
+                 {"$project" : {_id:0, scheme:"$_id.SCH_NAME", amc_code:"$_id.AMC_CODE", isin:"$_id.PRODUCT"}}
             ]
             const pipeline1 = [
-                {"$match" : {pan:pan}}, 
-                 {"$group" : {_id : {scheme:"$scheme", amc_code:"$amc_code", prodcode:"$prodcode"}}}, 
-                 {"$project" : {_id:0, scheme:"$_id.scheme", amc_code:"$_id.amc_code", isin:"$_id.prodcode"}}
+                {"$match" : {PAN:pan}}, 
+                 {"$group" : {_id : {SCHEME:"$SCHEME", AMC_CODE:"$AMC_CODE", PRODCODE:"$PRODCODE"}}}, 
+                 {"$project" : {_id:0, scheme:"$_id.SCHEME", amc_code:"$_id.AMC_CODE", isin:"$_id.PRODCODE"}}
             ]
             const pipeline2 = [  //trans_karvy
                 {"$match" : {PAN1:pan}}, 
                  {"$group" : {_id : {FUNDDESC:"$FUNDDESC", TD_FUND:"$TD_FUND",SCHEMEISIN:"$SCHEMEISIN"}}}, 
                  {"$project" : {_id:0, scheme:"$_id.FUNDDESC", amc_code:"$_id.TD_FUND",isin:"$_id.SCHEMEISIN"}}
             ]
-            folio.aggregate(pipeline, (err, newdata) => {
-               trans.aggregate(pipeline1, (err, newdata1) => {
+            folioc.aggregate(pipeline, (err, newdata) => {
+               transc.aggregate(pipeline1, (err, newdata1) => {
                    transk.aggregate(pipeline2, (err, newdata2) => {
                             if(newdata2.length != 0 || newdata1.length != 0 || newdata.length != 0){       
                                  resdata1= {
