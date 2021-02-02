@@ -258,7 +258,7 @@ app.post("/api/getamclist", function (req, res) {
         ]
 	const pipeline2 = [  //trans_karvy
             {"$match" : {PAN1:pan}}, 
-             {"$group" : {_id : {TD_ACNO:"$TD_ACNO", TD_FUND:"TD_FUND"}}}, 
+             {"$group" : {_id : {TD_ACNO:"$TD_ACNO", TD_FUND:"$TD_FUND"}}}, 
              {"$project" : {_id:0, folio:"$_id.TD_ACNO", amc_code:"$_id.TD_FUND"}}
         ]
         folioc.aggregate(pipeline, (err, newdata) => {
