@@ -291,6 +291,75 @@ app.post("/api/getamclist", function (req, res) {
             }      
     });    
     })
+ app.post("/api/getschemelist", function (req, res) {
+        Axios.get('https://prodigyfinallive.herokuapp.com/getUserDetails',
+        {data:{ email:req.body.email}}
+          ).then(function(result) {
+            if(result.data.data  === undefined || req.body.email == ''){
+                resdata= {
+                    status:400,
+                    message:'Data not found',            
+               }
+               res.json(resdata) 
+               return resdata;
+            }else{          
+           if(result.data.data === undefined || result.data.data == '' || result.data.message == "Bank details not found "){
+                resdata= {
+                    status:400,
+                    message:'Data not found',            
+               }
+               res.json(resdata) 
+               return resdata;
+            }else{
+            var pan =  result.data.data.User[0].pan_card;
+            var folio = mongoose.model('folio_cams', foliocams, 'folio_cams');
+            var trans = mongoose.model('trans_cams', transcams, 'trans_cams');
+            var transk = mongoose.model('trans_karvy', transkarvy, 'trans_karvy');
+            const pipeline = [
+                {"$match" : {pan_no:pan}}, 
+                 {"$group" : {_id : {sch_name:"$sch_name", amc_code:"$amc_code", product:"$product"}}}, 
+                 {"$project" : {_id:0, scheme:"$_id.sch_name", amc_code:"$_id.amc_code", isin:"$_id.product"}}
+            ]
+            const pipeline1 = [
+                {"$match" : {pan:pan}}, 
+                 {"$group" : {_id : {scheme:"$scheme", amc_code:"$amc_code", prodcode:"$prodcode"}}}, 
+                 {"$project" : {_id:0, scheme:"$_id.scheme", amc_code:"$_id.amc_code", isin:"$_id.prodcode"}}
+            ]
+            const pipeline2 = [  //trans_karvy
+                {"$match" : {PAN1:pan}}, 
+                 {"$group" : {_id : {FUNDDESC:"$FUNDDESC", TD_FUND:"$TD_FUND",SCHEMEISIN:"$SCHEMEISIN"}}}, 
+                 {"$project" : {_id:0, scheme:"$_id.FUNDDESC", amc_code:"$_id.TD_FUND",isin:"$_id.SCHEMEISIN"}}
+            ]
+            folio.aggregate(pipeline, (err, newdata) => {
+               trans.aggregate(pipeline1, (err, newdata1) => {
+                   transk.aggregate(pipeline2, (err, newdata2) => {
+                            if(newdata2.length != 0 || newdata1.length != 0 || newdata.length != 0){       
+                                 resdata1= {
+                                    status:200,
+                                    message:'Successfull',
+                                    data:  newdata2 
+                                  }
+                                }else{
+                                    resdata1= {
+                                    status:400,
+                                    message:'Data not found',            
+                               }
+                                }
+                                var datacon = newdata.concat(newdata1.concat(newdata2))
+                                datacon = datacon.map(JSON.stringify).reverse() // convert to JSON string the array content, then reverse it (to check from end to begining)
+                                .filter(function(item, index, arr){ return arr.indexOf(item, index + 1) === -1; }) // check if there is any occurence of the item in whole array
+                                .reverse().map(JSON.parse) ;
+                                 resdata.data = datacon
+                                console.log("res="+JSON.stringify(resdata))
+                                res.json(resdata)  
+                                return resdata                
+                       });
+                    });
+                  });   
+                }   
+            }   
+        });
+        })
 
 app.get("/api/getfoliolist", function (req, res) {
     Axios.get('https://prodigyfinallive.herokuapp.com/getUserDetails',
