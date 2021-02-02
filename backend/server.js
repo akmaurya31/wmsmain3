@@ -153,6 +153,7 @@ const transkarvy = new Schema({
     ASSETTYPE:{ type: String},
     TD_UNITS: { type: Number},
     SCHEMEISIN:{ type: String},
+    TD_FUND:{ type: String},
 }, { versionKey: false });
 
 const transfranklin = new Schema({
@@ -236,25 +237,38 @@ app.post("/api/getamclist", function (req, res) {
            return resdata;
         }else{
         var pan =  result.data.data.User[0].pan_card;
-        var folio = mongoose.model('folio_cams', foliocams, 'folio_cams');
-        var trans = mongoose.model('trans_cams', transcams, 'trans_cams');
-        const pipeline = [
+        var folioc = mongoose.model('folio_cams', foliocams, 'folio_cams');
+	//var foliok = mongoose.model('folio_karvy', foliokarvy, 'folio_karvy');
+        var transc = mongoose.model('trans_cams', transcams, 'trans_cams');
+	var transk = mongoose.model('trans_karvy', transkarvy, 'trans_karvy');
+        const pipeline = [//folio_cams
             {"$match" : {PAN_NO:pan}}, 
              {"$group" : {_id : {FOLIOCHK:"$FOLIOCHK", AMC_CODE:"$AMC_CODE"}}}, 
              {"$project" : {_id:0, folio:"$_id.FOLIOCHK", amc_code:"$_id.AMC_CODE"}}
         ]
-        const pipeline1 = [
+// 	const pipeline3 = [ //folio_karvy
+//             {"$match" : {PAN:pan}}, 
+//              {"$group" : {_id : {FOLIO_NO:"$FOLIO_NO", AMC_CODE:"$AMC_CODE"}}}, 
+//              {"$project" : {_id:0, folio:"$_id.FOLIO_NO", amc_code:"$_id.AMC_CODE"}}
+//         ]
+        const pipeline1 = [ //trans_cams
             {"$match" : {PAN:pan}}, 
              {"$group" : {_id : {FOLIO_NO:"$FOLIO_NO", AMC_CODE:"$AMC_CODE"}}}, 
              {"$project" : {_id:0, folio:"$_id.FOLIO_NO", amc_code:"$_id.AMC_CODE"}}
         ]
-        folio.aggregate(pipeline, (err, newdata) => {
-          trans.aggregate(pipeline1, (err, newdata1) => {
-            if(newdata1.length != 0 || newdata.length != 0){     
+	const pipeline2 = [  //trans_karvy
+            {"$match" : {PAN1:pan}}, 
+             {"$group" : {_id : {TD_ACNO:"$TD_ACNO", TD_FUND:"TD_FUND"}}}, 
+             {"$project" : {_id:0, folio:"$_id.TD_ACNO", amc_code:"$_id.TD_FUND"}}
+        ]
+        folioc.aggregate(pipeline, (err, newdata) => {
+          transc.aggregate(pipeline1, (err, newdata1) => {
+	       transk.aggregate(pipeline2, (err, newdata2) => {
+            if(newdata2.length != 0 || newdata1.length != 0 || newdata.length != 0){     
                              resdata= {
                                 status:200,
                                 message:'Successfull',
-                                data:  newdata1 
+                                data:  newdata2 
                               }
                             }else{
                                 resdata= {
@@ -262,7 +276,7 @@ app.post("/api/getamclist", function (req, res) {
                                 message:'Data not found',            
                            }
                             }
-                            var datacon = newdata.concat(newdata1)
+                            var datacon = newdata.concat(newdata1.concat(newdata2))
                             datacon = datacon.map(JSON.stringify).reverse() // convert to JSON string the array content, then reverse it (to check from end to begining)
                             .filter(function(item, index, arr){ return arr.indexOf(item, index + 1) === -1; }) // check if there is any occurence of the item in whole array
                             .reverse().map(JSON.parse) ;
