@@ -291,7 +291,7 @@ app.post("/api/getamclist", function (req, res) {
             }      
     });    
     })
- app.get("/api/getschemelist", function (req, res) {
+ app.post("/api/getschemelist", function (req, res) {
 	 var resdata="";
         Axios.get('https://prodigyfinallive.herokuapp.com/getUserDetails',
         {data:{ email:req.body.email}}
