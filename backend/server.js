@@ -291,7 +291,7 @@ app.post("/api/getamclist", function (req, res) {
             }      
     });    
     })
-  app.post("/api/getschemelistnew", function (req, res) {
+  app.post("/api/getschemelist", function (req, res) {
         var resdata="";
            Axios.get('https://prodigyfinallive.herokuapp.com/getUserDetails',
            {data:{ email:req.body.email}}
@@ -345,7 +345,7 @@ app.post("/api/getamclist", function (req, res) {
                     {$group : {_id:{SCHEMEISIN:"$SCHEMEISIN"} }},
                     {$lookup: { from: 'products',localField: '_id.SCHEMEISIN',foreignField: 'ISIN',as: 'master' } },
                     { $unwind: "$master"},
-                    {$project:{_id:0,SCHEMEISIN:"$_id.SCHEMEISIN",products:"$master.ISIN" }   },
+                    {$project:{_id:0,products:"$master" }   },
                ] 
                 const pipeline2=[ ///trans_franklin
                     {$match : {IT_PAN_NO1:pan,ISIN : {$ne : null}}}, 
@@ -357,8 +357,7 @@ app.post("/api/getamclist", function (req, res) {
                 transc.aggregate(pipeline, (err, newdata2) => {
                    transf.aggregate(pipeline2, (err, newdata1) => {
                         transk.aggregate(pipeline1, (err, newdata) => {
-                               if(newdata2.length != 0  || newdata1.length != 0 || newdata.length != 0){     
-                                if( newdata2 != 0){     
+                               if(newdata2.length != 0  || newdata1.length != 0 || newdata.length != 0){        
                                     resdata= {
                                        status:200,
                                        message:'Successfull',
@@ -377,7 +376,7 @@ app.post("/api/getamclist", function (req, res) {
                                     resdata.data = datacon
                                    res.json(resdata)  
                                    return resdata    
-                                }            
+                                           
                           });
                        });
           
