@@ -291,76 +291,102 @@ app.post("/api/getamclist", function (req, res) {
             }      
     });    
     })
- app.post("/api/getschemelist", function (req, res) {
-	 var resdata="";
-        Axios.get('https://prodigyfinallive.herokuapp.com/getUserDetails',
-        {data:{ email:req.body.email}}
-          ).then(function(result) {
-            if(result.data.data  === undefined || req.body.email == ''){
-                resdata= {
-                    status:400,
-                    message:'Data not found',            
-               }
-               res.json(resdata) 
-               return resdata;
-            }else{          
-           if(result.data.data === undefined || result.data.data == '' || result.data.message == "Bank details not found "){
-                resdata= {
-                    status:400,
-                    message:'Data not found',            
-               }
-               res.json(resdata) 
-               return resdata;
-            }else{
-            var pan =  result.data.data.User[0].pan_card;
-            var folioc = mongoose.model('folio_cams', foliocams, 'folio_cams');
-            var transc = mongoose.model('trans_cams', transcams, 'trans_cams');
-            var transk = mongoose.model('trans_karvy', transkarvy, 'trans_karvy');
-            const pipeline = [
-                {"$match" : {PAN_NO:pan}}, 
-                 {"$group" : {_id : {SCH_NAME:"$SCH_NAME", AMC_CODE:"$AMC_CODE", PRODUCT:"$PRODUCT"}}}, 
-                 {"$project" : {_id:0, SCHEME:"$_id.SCH_NAME", AMC_CODE:"$_id.AMC_CODE", PRODUCTCODE:"$_id.PRODUCT"}}
-            ]
-            const pipeline1 = [
-                {"$match" : {PAN:pan}}, 
-                 {"$group" : {_id : {SCHEME:"$SCHEME", AMC_CODE:"$AMC_CODE", PRODCODE:"$PRODCODE"}}}, 
-                 {"$project" : {_id:0, SCHEME:"$_id.SCHEME", AMC_CODE:"$_id.AMC_CODE", PRODUCTCODE:"$_id.PRODCODE"}}
-            ]
-            const pipeline2 = [  //trans_karvy
-                {"$match" : {PAN1:pan}}, 
-                 {"$group" : {_id : {FUNDDESC:"$FUNDDESC", TD_FUND:"$TD_FUND",SCHEMEISIN:"$SCHEMEISIN"}}}, 
-                 {"$project" : {_id:0, SCHEME:"$_id.FUNDDESC", AMC_CODE:"$_id.TD_FUND",ISIN:"$_id.SCHEMEISIN"}}
-            ]
-            folioc.aggregate(pipeline, (err, newdata) => {
-               transc.aggregate(pipeline1, (err, newdata1) => {
-                   transk.aggregate(pipeline2, (err, newdata2) => {
-                            if(newdata2.length != 0 || newdata1.length != 0 || newdata.length != 0){       
-                                 resdata= {
-                                    status:200,
-                                    message:'Successfull',
-                                    data:  newdata2 
-                                  }
-                                }else{
-                                    resdata= {
-                                    status:400,
-                                    message:'Data not found',            
-                               }
+  app.post("/api/getschemelistnew", function (req, res) {
+        var resdata="";
+           Axios.get('https://prodigyfinallive.herokuapp.com/getUserDetails',
+           {data:{ email:req.body.email}}
+             ).then(function(result) {
+               if(result.data.data  === undefined || req.body.email == ''){
+                   resdata= {
+                       status:400,
+                       message:'Data not found',            
+                  }
+                  res.json(resdata) 
+                  return resdata;
+               }else{          
+              if(result.data.data === undefined || result.data.data == '' || result.data.message == "Bank details not found "){
+                   resdata= {
+                       status:400,
+                       message:'Data not found',            
+                  }
+                  res.json(resdata) 
+                  return resdata;
+               }else{
+               var pan =  result.data.data.User[0].pan_card;
+                var transc = mongoose.model('trans_cams', transcams, 'trans_cams');
+                var transk = mongoose.model('trans_karvy', transkarvy, 'trans_karvy');
+                var transf = mongoose.model('trans_franklin', transfranklin, 'trans_franklin');
+               const pipeline = [
+                        {$match : {PAN:pan}},
+                        {$group : {_id : { AMC_CODE:"$AMC_CODE", PRODCODE:"$PRODCODE", code :{$reduce:{input:{$split:["$PRODCODE","$AMC_CODE"]},initialValue: "",in: {$concat: ["$$value","$$this"]}} }  }}},
+                        {$lookup:
+                        {
+                        from: "products",
+                        let: { ccc: "$_id.code", amc:"$_id.AMC_CODE"},
+                        pipeline: [
+                            { $match:
+                                { $expr:
+                                    { $and:
+                                    [
+                                        { $eq: [ "$PRODUCT_CODE",  "$$ccc" ] },
+                                        { $eq: [ "$AMC_CODE", "$$amc" ] }
+                                    ]
+                                    }
                                 }
-                                var datacon = newdata.concat(newdata1.concat(newdata2))
-                                datacon = datacon.map(JSON.stringify).reverse() // convert to JSON string the array content, then reverse it (to check from end to begining)
-                                .filter(function(item, index, arr){ return arr.indexOf(item, index + 1) === -1; }) // check if there is any occurence of the item in whole array
-                                .reverse().map(JSON.parse) ;
-                                 resdata.data = datacon
-                                console.log("res="+JSON.stringify(resdata))
-                                res.json(resdata)  
-                                return resdata                
+                            },
+                            { $project: {  _id: 0 } }
+                        ],
+                        as: "products"
+                        }},
+                        {$project :{ _id:0 , products:"$products" } },
+                   ]
+                const pipeline1=[  //trans_karvy
+                    {$match : {PAN1:pan,SCHEMEISIN : {$ne : null}}}, 
+                    {$group : {_id:{SCHEMEISIN:"$SCHEMEISIN"} }},
+                    {$lookup: { from: 'products',localField: '_id.SCHEMEISIN',foreignField: 'ISIN',as: 'master' } },
+                    { $unwind: "$master"},
+                    {$project:{_id:0,SCHEMEISIN:"$_id.SCHEMEISIN",products:"$master.ISIN" }   },
+               ] 
+                const pipeline2=[ ///trans_franklin
+                    {$match : {IT_PAN_NO1:pan,ISIN : {$ne : null}}}, 
+                    {$group : {_id:{ISIN:"$ISIN"} }},
+                    {$lookup: { from: 'products',localField: '_id.ISIN',foreignField: 'ISIN',as: 'master' } },
+                    { $unwind: "$master"},
+                    {$project:{_id:0,products:"$master" }   },
+              ] 
+                transc.aggregate(pipeline, (err, newdata2) => {
+                   transf.aggregate(pipeline2, (err, newdata1) => {
+                        transk.aggregate(pipeline1, (err, newdata) => {
+                               if(newdata2.length != 0  || newdata1.length != 0 || newdata.length != 0){     
+                                if( newdata2 != 0){     
+                                    resdata= {
+                                       status:200,
+                                       message:'Successfull',
+                                       data:  newdata2
+                                     }
+                                   }else{
+                                       resdata= {
+                                       status:400,
+                                       message:'Data not found',            
+                                  }
+                                   }
+                                   var datacon = newdata2.concat(newdata1.concat(newdata))
+                                   datacon = datacon.map(JSON.stringify).reverse() // convert to JSON string the array content, then reverse it (to check from end to begining)
+                                   .filter(function(item, index, arr){ return arr.indexOf(item, index + 1) === -1; }) // check if there is any occurence of the item in whole array
+                                   .reverse().map(JSON.parse) ;
+                                    resdata.data = datacon
+                                   res.json(resdata)  
+                                   return resdata    
+                                }            
+                          });
                        });
-                    });
-                  });   
+          
+                     });   
+                    
                 }   
-            }   
-        });
-        })
+            }
+           });
+           })
 
 app.get("/api/getfoliolist", function (req, res) {
     Axios.get('https://prodigyfinallive.herokuapp.com/getUserDetails',
